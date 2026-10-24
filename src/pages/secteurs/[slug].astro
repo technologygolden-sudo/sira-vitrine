@@ -1,0 +1,64 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Bouton from '@/components/Bouton.astro';
+import Carte from '@/components/Carte.astro';
+import IllustrationExpertise from '@/components/IllustrationExpertise.astro';
+import BandeauAction from '@/components/BandeauAction.astro';
+import { SECTEURS, type Secteur } from '@/data/secteurs';
+import { trouverExpertise } from '@/data/expertises';
+import { lienWhatsApp } from '@/config/site';
+
+export function getStaticPaths() {
+  return SECTEURS.map((s) => ({ params: { slug: s.slug }, props: { secteur: s } }));
+}
+
+const { secteur } = Astro.props as { secteur: Secteur };
+const expertises = secteur.expertises.map(trouverExpertise).filter((e) => e !== undefined);
+---
+<BaseLayout titre={secteur.nom} description={`${secteur.intro} ${secteur.pack} : ${secteur.packTexte}`}>
+  <section class="bg-nuit py-16 text-white">
+    <div class="mx-auto max-w-6xl px-6">
+      <a href="/secteurs" class="text-sm font-semibold text-orange hover:underline">← Tous les secteurs</a>
+      <h1 class="mt-4 text-4xl font-bold text-white md:text-5xl">{secteur.nom}</h1>
+      <p class="mt-4 max-w-2xl text-lg text-nuit-50">{secteur.intro}</p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        <h2 class="text-3xl font-bold">Vos besoins fréquents</h2>
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+          {secteur.besoins.map((b) => (
+            <li class="flex items-start gap-3 rounded-xl bg-white p-4">
+              <svg class="mt-1 h-5 w-5 flex-none text-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <aside class="flex flex-col gap-4 rounded-carte bg-nuit p-8 text-white">
+        <p class="text-sm font-bold uppercase tracking-widest text-orange">Solution recommandée</p>
+        <p class="font-titre text-2xl font-semibold">{secteur.pack}</p>
+        <p class="text-nuit-50">{secteur.packTexte}</p>
+        <Bouton href={lienWhatsApp(`Bonjour SIRA, je suis intéressé par le ${secteur.pack} (${secteur.nom}).`)} externe class="mt-auto">Obtenir une proposition</Bouton>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bg-white py-16">
+    <div class="mx-auto max-w-6xl px-6">
+      <h2 class="text-3xl font-bold">Nos expertises pour votre secteur</h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {expertises.map((e) => (
+          <Carte titre={e.titre} href={`/expertises/${e.slug}`}>
+            <IllustrationExpertise slot="illustration" expertise={e} />
+            {e.resume}
+          </Carte>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <BandeauAction />
+</BaseLayout>

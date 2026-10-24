@@ -1,0 +1,147 @@
+---
+// Demande de devis en 4 étapes. Aucune donnée n'est stockée sur le site :
+// la demande est envoyée par WhatsApp ou par email depuis l'appareil du visiteur.
+// (Étape 6 : envoi direct par email via une fonction Cloudflare + anti-spam Turnstile.)
+import { SECTEURS } from '@/data/secteurs';
+import { SITE } from '@/config/site';
+
+const besoins = ['Ordinateurs & périphériques', 'Mobilier de bureau', 'Réseau & Wi-Fi', 'Vidéosurveillance', 'Contrôle d’accès', 'Borne / affichage dynamique', 'Logiciel de gestion', 'Site web', 'Fournitures & consommables', 'Maintenance'];
+const tailles = ['1 à 5', '6 à 20', '21 à 50', 'Plus de 50'];
+const delais = ['Urgent (moins de 2 semaines)', 'Ce mois-ci', 'D’ici 1 à 3 mois', 'Je me renseigne'];
+const puce = 'flex min-h-12 cursor-pointer items-center rounded-full border-2 border-bordure bg-white px-4 py-2 font-semibold has-[:checked]:border-nuit has-[:checked]:bg-nuit has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-orange';
+---
+<form id="devis" class="rounded-carte bg-white p-6 shadow-sm md:p-10" data-devis data-whatsapp={SITE.whatsapp} data-email={SITE.email} novalidate>
+  <div class="mb-8 hidden" data-progression>
+    <div class="mb-2 flex justify-between text-sm text-texte-doux"><span data-etape-texte>Étape 1 sur 4</span></div>
+    <div class="h-2 overflow-hidden rounded bg-bordure"><div class="h-full w-1/4 rounded bg-orange transition-all" data-barre></div></div>
+  </div>
+
+  <fieldset data-etape="1" class="mb-8">
+    <legend class="mb-4 font-titre text-xl font-bold text-nuit">1. Quel est votre secteur ?</legend>
+    <div class="flex flex-wrap gap-3">
+      {SECTEURS.map((s) => (
+        <label class={puce}><input type="radio" name="secteur" value={s.nom} class="sr-only" required />{s.nom}</label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset data-etape="2" class="mb-8">
+    <legend class="mb-4 font-titre text-xl font-bold text-nuit">2. De quoi avez-vous besoin ? <span class="text-base font-normal text-texte-doux">(plusieurs choix)</span></legend>
+    <div class="flex flex-wrap gap-3">
+      {besoins.map((b) => (
+        <label class={puce}><input type="checkbox" name="besoins" value={b} class="sr-only" />{b}</label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset data-etape="3" class="mb-8">
+    <legend class="mb-4 font-titre text-xl font-bold text-nuit">3. Taille et délai</legend>
+    <p class="mb-3 font-semibold">Nombre de personnes ou de postes concernés</p>
+    <div class="mb-6 flex flex-wrap gap-3">
+      {tailles.map((t) => (<label class={puce}><input type="radio" name="taille" value={t} class="sr-only" required />{t}</label>))}
+    </div>
+    <p class="mb-3 font-semibold">Pour quand ?</p>
+    <div class="flex flex-wrap gap-3">
+      {delais.map((d) => (<label class={puce}><input type="radio" name="delai" value={d} class="sr-only" required />{d}</label>))}
+    </div>
+  </fieldset>
+
+  <fieldset data-etape="4" class="mb-8">
+    <legend class="mb-4 font-titre text-xl font-bold text-nuit">4. Vos coordonnées</legend>
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="flex flex-col gap-2 font-semibold">Nom et prénom
+        <input type="text" name="nom" required maxlength="80" autocomplete="name" class="min-h-12 rounded-xl border-2 border-bordure px-4 font-normal" />
+      </label>
+      <label class="flex flex-col gap-2 font-semibold">Entreprise ou structure
+        <input type="text" name="structure" maxlength="100" autocomplete="organization" class="min-h-12 rounded-xl border-2 border-bordure px-4 font-normal" />
+      </label>
+      <label class="flex flex-col gap-2 font-semibold md:col-span-2">Précisions (facultatif)
+        <textarea name="message" rows="3" maxlength="600" class="rounded-xl border-2 border-bordure p-4 font-normal"></textarea>
+      </label>
+    </div>
+    <p class="mt-4 text-sm text-texte-doux">Vos informations servent uniquement à répondre à votre demande. Voir nos <a href="/mentions-legales" class="underline">mentions légales</a>.</p>
+  </fieldset>
+
+  <p class="mb-4 hidden rounded-xl bg-orange-50 p-4 font-semibold text-orange-700" role="alert" data-erreur></p>
+
+  <div class="flex flex-wrap justify-between gap-3">
+    <button type="button" class="hidden min-h-12 rounded-xl border-2 border-bordure px-6 font-bold" data-precedent>Retour</button>
+    <button type="button" class="hidden min-h-12 rounded-xl bg-nuit px-6 font-bold text-white hover:bg-nuit-700" data-suivant>Continuer</button>
+    <div class="flex flex-wrap gap-3" data-envoi>
+      <button type="submit" name="canal" value="whatsapp" class="min-h-12 rounded-xl bg-[#1F8C4E] px-6 font-bold text-white">Envoyer sur WhatsApp</button>
+      <button type="submit" name="canal" value="email" class="min-h-12 rounded-xl border-2 border-nuit px-6 font-bold text-nuit">Envoyer par email</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-devis]');
+  if (form) {
+    const etapes = Array.from(form.querySelectorAll<HTMLFieldSetElement>('[data-etape]'));
+    const btnPrec = form.querySelector<HTMLButtonElement>('[data-precedent]')!;
+    const btnSuiv = form.querySelector<HTMLButtonElement>('[data-suivant]')!;
+    const zoneEnvoi = form.querySelector<HTMLElement>('[data-envoi]')!;
+    const erreur = form.querySelector<HTMLElement>('[data-erreur]')!;
+    const texte = form.querySelector<HTMLElement>('[data-etape-texte]')!;
+    const barre = form.querySelector<HTMLElement>('[data-barre]')!;
+    form.querySelector('[data-progression]')!.classList.remove('hidden');
+    let courant = 0;
+
+    const valeurs = (nom: string) =>
+      Array.from(form.querySelectorAll<HTMLInputElement>(`[name="${nom}"]:checked`)).map((i) => i.value);
+    const champ = (nom: string) => (form.elements.namedItem(nom) as HTMLInputElement | null)?.value.trim() ?? '';
+
+    const verifier = (i: number): string => {
+      if (i === 0 && !valeurs('secteur').length) return 'Choisissez votre secteur.';
+      if (i === 1 && !valeurs('besoins').length) return 'Choisissez au moins un besoin.';
+      if (i === 2 && (!valeurs('taille').length || !valeurs('delai').length)) return 'Indiquez la taille et le délai.';
+      if (i === 3 && champ('nom').length < 2) return 'Indiquez votre nom.';
+      return '';
+    };
+
+    const afficher = () => {
+      etapes.forEach((e, i) => (e.hidden = i !== courant));
+      btnPrec.classList.toggle('hidden', courant === 0);
+      btnSuiv.classList.toggle('hidden', courant === etapes.length - 1);
+      zoneEnvoi.classList.toggle('hidden', courant !== etapes.length - 1);
+      texte.textContent = `Étape ${courant + 1} sur ${etapes.length}`;
+      barre.style.width = `${((courant + 1) / etapes.length) * 100}%`;
+      erreur.classList.add('hidden');
+    };
+
+    const signaler = (msg: string) => { erreur.textContent = msg; erreur.classList.remove('hidden'); };
+
+    btnSuiv.addEventListener('click', () => {
+      const msg = verifier(courant);
+      if (msg) return signaler(msg);
+      courant++; afficher();
+    });
+    btnPrec.addEventListener('click', () => { courant--; afficher(); });
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      for (let i = 0; i < etapes.length; i++) {
+        const msg = verifier(i);
+        if (msg) { courant = i; afficher(); return signaler(msg); }
+      }
+      const message = [
+        'Bonjour SIRA Business Center, je souhaite une proposition.',
+        `Secteur : ${valeurs('secteur').join(', ')}`,
+        `Besoins : ${valeurs('besoins').join(', ')}`,
+        `Taille : ${valeurs('taille').join(', ')}`,
+        `Délai : ${valeurs('delai').join(', ')}`,
+        `Nom : ${champ('nom')}`,
+        `Structure : ${champ('structure') || '-'}`,
+        champ('message') ? `Précisions : ${champ('message')}` : '',
+      ].filter(Boolean).join('\n');
+
+      const canal = (ev.submitter as HTMLButtonElement | null)?.value;
+      const url = canal === 'email'
+        ? `mailto:${form.dataset.email}?subject=${encodeURIComponent('Demande de devis')}&body=${encodeURIComponent(message)}`
+        : `https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener');
+    });
+
+    afficher();
+  }
+</script>

@@ -1,0 +1,52 @@
+---
+import Logo from './Logo.astro';
+import Bouton from './Bouton.astro';
+import { NAVIGATION } from '@/config/site';
+
+const cheminActuel = Astro.url.pathname.replace(/\/$/, '') || '/';
+const estActif = (href: string) => (href === '/' ? cheminActuel === '/' : cheminActuel.startsWith(href));
+---
+<header class="sticky top-0 z-40 border-b border-bordure bg-white/95 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+    <a href="/" aria-label="Accueil SIRA Business Center">
+      <Logo />
+    </a>
+
+    <!-- Menu ordinateur -->
+    <nav aria-label="Navigation principale" class="hidden items-center gap-1 lg:flex">
+      {NAVIGATION.map((lien) => (
+        <a
+          href={lien.href}
+          aria-current={estActif(lien.href) ? 'page' : undefined}
+          class:list={[
+            'rounded-lg px-3 py-2 font-medium transition-colors hover:text-orange-700',
+            estActif(lien.href) ? 'text-orange-700' : 'text-nuit',
+          ]}
+        >
+          {lien.libelle}
+        </a>
+      ))}
+      <Bouton href="/contact" class="ml-3">Demander un devis</Bouton>
+    </nav>
+
+    <!-- Menu mobile : <details> fonctionne sans JavaScript -->
+    <details class="group relative lg:hidden">
+      <summary class="flex min-h-12 min-w-12 cursor-pointer list-none items-center justify-center rounded-lg border border-bordure [&::-webkit-details-marker]:hidden" aria-label="Ouvrir le menu">
+        <svg class="h-6 w-6 text-nuit group-open:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" /></svg>
+        <svg class="hidden h-6 w-6 text-nuit group-open:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" /></svg>
+      </summary>
+      <nav aria-label="Navigation mobile" class="absolute right-0 mt-2 flex w-64 flex-col gap-1 rounded-2xl border border-bordure bg-white p-3 shadow-xl">
+        {NAVIGATION.map((lien) => (
+          <a
+            href={lien.href}
+            aria-current={estActif(lien.href) ? 'page' : undefined}
+            class:list={['rounded-lg px-3 py-3 font-medium hover:bg-fond', estActif(lien.href) ? 'text-orange-700' : 'text-nuit']}
+          >
+            {lien.libelle}
+          </a>
+        ))}
+        <Bouton href="/contact" class="mt-2">Demander un devis</Bouton>
+      </nav>
+    </details>
+  </div>
+</header>

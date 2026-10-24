@@ -1,0 +1,16 @@
+# Dépendances et builds
+node_modules/
+dist/
+.astro/
+
+# Secrets : ne jamais versionner
+.env
+.env.*
+!.env.example
+
+# Système / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+*.log

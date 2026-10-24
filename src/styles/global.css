@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* Charte SIRA Business Center : bleu nuit + orange du logo */
+@theme {
+  --color-nuit: #1C2B4B;
+  --color-nuit-700: #2B3E66;
+  --color-nuit-50: #EEF1F6;
+  --color-orange: #F26A1B;
+  --color-orange-600: #D85A12;
+  --color-orange-700: #B5470C;
+  --color-orange-50: #FEF1E8;
+  --color-texte: #1C2B4B;
+  --color-texte-doux: #4A5D75;
+  --color-fond: #F5F7FA;
+  --color-bordure: #E1E7EF;
+
+  --font-titre: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-corps: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-carte: 1.125rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-fond text-texte font-corps antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-titre text-nuit;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-orange);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

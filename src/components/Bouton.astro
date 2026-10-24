@@ -1,0 +1,25 @@
+---
+// Bouton-lien unique pour tout le site : garantit la cohérence et l'accessibilité
+// (zone cliquable ≥ 48 px, contraste suffisant, focus visible).
+interface Props {
+  href: string;
+  variante?: 'principal' | 'secondaire' | 'contour' | 'contour-clair';
+  externe?: boolean;
+  class?: string;
+}
+const { href, variante = 'principal', externe = false, class: classe } = Astro.props;
+
+const styles = {
+  principal: 'bg-orange text-nuit hover:bg-orange-600',
+  secondaire: 'bg-nuit text-white hover:bg-nuit-700',
+  contour: 'border-2 border-nuit text-nuit hover:bg-nuit hover:text-white',
+  'contour-clair': 'border-2 border-white/60 text-white hover:bg-white/10',
+};
+---
+<a
+  href={href}
+  class:list={['inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold transition-colors', styles[variante], classe]}
+  {...(externe ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+>
+  <slot />
+</a>

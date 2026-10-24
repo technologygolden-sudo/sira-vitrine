@@ -1,0 +1,20 @@
+---
+// Carte réutilisable (expertises, secteurs, valeurs…). Devient un lien si `href` est fourni.
+interface Props {
+  titre: string;
+  href?: string;
+}
+const { titre, href } = Astro.props;
+const Balise = href ? 'a' : 'div';
+---
+<Balise
+  href={href}
+  class="group flex h-full flex-col overflow-hidden rounded-carte border border-bordure bg-white transition hover:-translate-y-1 hover:shadow-xl"
+>
+  <slot name="illustration" />
+  <div class="flex flex-1 flex-col gap-3 p-6">
+    <h3 class="text-xl font-bold">{titre}</h3>
+    <div class="text-texte-doux"><slot /></div>
+    {href && <span class="mt-auto pt-2 font-bold text-orange-700 group-hover:underline">En savoir plus →</span>}
+  </div>
+</Balise>
