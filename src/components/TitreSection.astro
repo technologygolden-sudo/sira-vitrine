@@ -1,0 +1,15 @@
+---
+// Titre de section homogène : sur-titre orange + titre + introduction.
+interface Props {
+  surTitre?: string;
+  titre: string;
+  intro?: string;
+  centre?: boolean;
+}
+const { surTitre, titre, intro, centre = false } = Astro.props;
+---
+<div class:list={['mb-10 max-w-3xl', centre && 'mx-auto text-center']}>
+  {surTitre && <p class="mb-2 text-sm font-bold uppercase tracking-widest text-orange-700">{surTitre}</p>}
+  <h2 class="text-3xl font-bold leading-tight md:text-4xl">{titre}</h2>
+  {intro && <p class="mt-4 text-lg text-texte-doux">{intro}</p>}
+</div>

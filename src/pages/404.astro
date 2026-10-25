@@ -1,0 +1,15 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Bouton from '@/components/Bouton.astro';
+---
+<BaseLayout titre="Page introuvable">
+  <section class="mx-auto max-w-2xl px-6 py-24 text-center">
+    <p class="font-titre text-7xl font-bold text-orange">404</p>
+    <h1 class="mt-4 text-3xl font-bold">Cette page n’existe pas (ou plus)</h1>
+    <p class="mt-4 text-texte-doux">Le lien est peut-être erroné. Revenez à l’accueil ou contactez-nous.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <Bouton href="/">Retour à l’accueil</Bouton>
+      <Bouton href="/contact" variante="contour">Nous contacter</Bouton>
+    </div>
+  </section>
+</BaseLayout>

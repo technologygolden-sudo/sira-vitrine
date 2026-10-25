@@ -1,0 +1,25 @@
+---
+// Mise en scène d'un problème : photo img/probleme-<id>.jpg si présente,
+// sinon illustration vectorielle aux couleurs SIRA.
+import { Image } from 'astro:assets';
+import { ILLUSTRATIONS } from '@/data/illustrations-situations';
+import { imageProjet } from '@/lib/photos';
+
+interface Props {
+  id: string;
+  alt: string;
+  class?: string;
+}
+const { id, alt, class: classe } = Astro.props;
+const photo = imageProjet([`probleme-${id}.jpg`, `probleme-${id}.jpeg`, `probleme-${id}.png`]);
+const dessin = ILLUSTRATIONS[id];
+---
+{photo ? (
+  <Image src={photo} alt={alt} width={480} height={280} class:list={['object-cover', classe]} loading="lazy" />
+) : dessin ? (
+  <div
+    class:list={['overflow-hidden [&>svg]:h-full [&>svg]:w-full', classe]}
+    {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': 'true' })}
+    set:html={dessin}
+  />
+) : null}

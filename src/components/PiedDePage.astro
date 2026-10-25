@@ -1,0 +1,41 @@
+---
+import Logo from './Logo.astro';
+import { SITE, NAVIGATION, lienWhatsApp } from '@/config/site';
+import { url } from '@/lib/url';
+const annee = new Date().getFullYear();
+---
+<footer class="bg-nuit text-nuit-50">
+  <div class="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3">
+    <div>
+      <Logo clair />
+      <p class="mt-4 max-w-xs text-sm">{SITE.slogan}</p>
+    </div>
+
+    <nav aria-label="Plan du site">
+      <p class="mb-3 font-titre font-semibold text-white">Navigation</p>
+      <ul class="space-y-2 text-sm">
+        {NAVIGATION.map((lien) => (
+          <li><a href={url(lien.href)} class="hover:text-orange">{lien.libelle}</a></li>
+        ))}
+        <li><a href={url('/mentions-legales')} class="hover:text-orange">Mentions légales</a></li>
+      </ul>
+    </nav>
+
+    <address class="not-italic text-sm">
+      <p class="mb-3 font-titre font-semibold text-white">Contact</p>
+      <ul class="space-y-2">
+        <li><a href={`tel:${SITE.telephoneLien}`} class="hover:text-orange">{SITE.telephone}</a></li>
+        <li><a href={`mailto:${SITE.email}`} class="hover:text-orange">{SITE.email}</a></li>
+        <li>{SITE.adresse}</li>
+        <li>Horaires : {SITE.horaires}</li>
+        <li><a href={lienWhatsApp()} target="_blank" rel="noopener noreferrer" class="font-semibold text-orange hover:text-orange-50">Écrire sur WhatsApp</a></li>
+      </ul>
+    </address>
+  </div>
+  <div class="border-t border-white/10">
+    <p class="mx-auto max-w-6xl px-6 py-5 text-xs">
+      © {annee} {SITE.nom}. Tous droits réservés.
+      Instagram & LinkedIn : {SITE.reseaux.instagram} · Facebook : {SITE.reseaux.facebook}
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Carte from '@/components/Carte.astro';
+import IllustrationExpertise from '@/components/IllustrationExpertise.astro';
+import BandeauAction from '@/components/BandeauAction.astro';
+import { EXPERTISES } from '@/data/expertises';
+---
+<BaseLayout titre="Nos expertises" description="Logiciels de gestion, réseau et sécurité, affichage dynamique, fournitures de bureau et solutions web à Abidjan.">
+  <section class="bg-nuit py-16 text-white">
+    <div class="mx-auto max-w-6xl px-6">
+      <p class="text-sm font-bold uppercase tracking-widest text-orange">Nos expertises</p>
+      <h1 class="mt-3 text-4xl font-bold text-white md:text-5xl">Cinq expertises, une seule équipe</h1>
+      <p class="mt-4 max-w-2xl text-lg text-nuit-50">Nous concevons la solution complète, adaptée à votre activité, et restons à vos côtés après l’installation.</p>
+    </div>
+  </section>
+  <section class="py-16">
+    <div class="mx-auto grid max-w-6xl gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
+      {EXPERTISES.map((e) => (
+        <Carte titre={e.titre} href={`/expertises/${e.slug}`}>
+          <IllustrationExpertise slot="illustration" expertise={e} />
+          <p class="font-semibold text-nuit">{e.accroche}</p>
+          <p class="mt-2">{e.resume}</p>
+        </Carte>
+      ))}
+    </div>
+  </section>
+  <BandeauAction titre="Vous ne savez pas par où commencer ?" texte="Décrivez votre situation : nous vous orientons vers la bonne solution." />
+</BaseLayout>

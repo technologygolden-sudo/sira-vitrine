@@ -1,0 +1,93 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Bouton from '@/components/Bouton.astro';
+import BandeauAction from '@/components/BandeauAction.astro';
+import { EXPERTISES, type Expertise } from '@/data/expertises';
+import { situationsDeLExpertise } from '@/data/situations';
+import { METHODE } from '@/data/entreprise';
+import { lienWhatsApp } from '@/config/site';
+import { url } from '@/lib/url';
+import IllustrationExpertise from '@/components/IllustrationExpertise.astro';
+import IllustrationSituation from '@/components/IllustrationSituation.astro';
+
+export function getStaticPaths() {
+  return EXPERTISES.map((e) => ({ params: { slug: e.slug }, props: { expertise: e } }));
+}
+
+const { expertise } = Astro.props as { expertise: Expertise };
+const situations = situationsDeLExpertise(expertise.slug);
+---
+<BaseLayout titre={expertise.titre} description={expertise.resume}>
+  <section class="bg-nuit text-white">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-2">
+      <div>
+        <a href={url('/expertises')}class="text-sm font-semibold text-orange hover:underline">← Toutes nos expertises</a>
+        <h1 class="mt-4 text-4xl font-bold text-white md:text-5xl">{expertise.titre}</h1>
+        <p class="mt-4 text-xl font-semibold text-orange-50">{expertise.accroche}</p>
+        <p class="mt-4 text-lg text-nuit-50">{expertise.resume}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Bouton href={lienWhatsApp(`Bonjour SIRA, je souhaite en savoir plus sur : ${expertise.titre}.`)} externe>En parler sur WhatsApp</Bouton>
+          <Bouton href="/contact#devis" variante="contour-clair">Demander un devis</Bouton>
+        </div>
+      </div>
+      <IllustrationExpertise expertise={expertise} variante="grande" />
+    </div>
+  </section>
+
+  {situations.length > 0 && (
+    <section class="bg-white py-16">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-sm font-bold uppercase tracking-widest text-orange-700">Vous reconnaissez-vous ?</p>
+        <h2 class="mt-2 text-3xl font-bold">Les problèmes que nous réglons</h2>
+        <div class="mt-8 grid gap-6 md:grid-cols-2">
+          {situations.map((s) => (
+            <article class="overflow-hidden rounded-carte border border-bordure bg-white">
+              <IllustrationSituation id={s.id} alt={s.question} class="h-44 w-full" />
+              <div class="p-6">
+                <h3 class="text-xl font-bold">{s.question}</h3>
+                <p class="mt-3"><span class="font-bold text-[#B42318]">Le risque : </span>{s.risque}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div class="mt-8 flex flex-wrap items-center justify-between gap-6 rounded-carte bg-nuit p-8 text-white">
+          <div class="max-w-2xl">
+            <p class="text-sm font-bold uppercase tracking-widest text-orange">Vous vous êtes reconnu ?</p>
+            <p class="mt-2 font-titre text-2xl font-semibold">{expertise.recommandation}</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <Bouton href={lienWhatsApp(`Bonjour SIRA, je rencontre un de ces problèmes (${expertise.titre}). Pouvez-vous m’aider ?`)} externe>En parler à un conseiller</Bouton>
+            <Bouton href="/contact#devis" variante="contour-clair">Demander un devis</Bouton>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="py-16">
+    <div class="mx-auto max-w-6xl px-6">
+      <h2 class="text-3xl font-bold">Ce que nous faisons</h2>
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {expertise.services.map((s) => (
+          <li class="rounded-2xl bg-white p-6">
+            <p class="font-titre text-lg font-semibold text-nuit">{s.titre}</p>
+            <p class="mt-2 text-texte-doux">{s.texte}</p>
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="mt-16 text-3xl font-bold">Notre méthode</h2>
+      <ol class="mt-8 grid gap-4 md:grid-cols-5">
+        {METHODE.map((e, i) => (
+          <li class="rounded-2xl border border-bordure bg-white p-5">
+            <span class="font-titre text-2xl font-bold text-orange">{i + 1}</span>
+            <p class="mt-2 font-semibold text-nuit">{e.titre}</p>
+            <p class="mt-1 text-sm text-texte-doux">{e.texte}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <BandeauAction />
+</BaseLayout>

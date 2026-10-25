@@ -1,0 +1,68 @@
+---
+import '@/styles/global.css';
+import { SITE } from '@/config/site';
+import { url } from '@/lib/url';
+import Entete from '@/components/Entete.astro';
+import PiedDePage from '@/components/PiedDePage.astro';
+import WhatsAppFlottant from '@/components/WhatsAppFlottant.astro';
+
+interface Props {
+  titre?: string;
+  description?: string;
+  image?: string;
+}
+
+const { titre, description = SITE.description, image = '/og-image.jpg' } = Astro.props;
+const titreComplet = titre ? `${titre} | ${SITE.nom}` : `${SITE.nom} – Solutions digitales & équipements professionnels`;
+const urlCanonique = new URL(Astro.url.pathname, Astro.site);
+const urlImage = new URL(image, Astro.site);
+
+// Données structurées : aident Google à afficher l'entreprise (adresse, téléphone, horaires).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: SITE.nom,
+  description: SITE.description,
+  url: Astro.site?.toString(),
+  telephone: SITE.telephone,
+  email: SITE.email,
+  address: { '@type': 'PostalAddress', streetAddress: 'Avenue Tiémoko Meyliet Koné', addressLocality: 'Abidjan', addressCountry: 'CI' },
+};
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={urlCanonique} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <meta name="theme-color" content="#1C2B4B" />
+
+    <!-- Partage sur les réseaux sociaux -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_CI" />
+    <meta property="og:site_name" content={SITE.nom} />
+    <meta property="og:title" content={titreComplet} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={urlCanonique} />
+    <meta property="og:image" content={urlImage} />
+
+    <!-- Polices (à auto-héberger à l'étape 6 pour supprimer cet appel externe) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <a href="#contenu" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 bg-white px-4 py-2 rounded-lg">Aller au contenu</a>
+    <Entete />
+    <main id="contenu" class="flex-1">
+      <slot />
+    </main>
+    <PiedDePage />
+    <WhatsAppFlottant />
+  </body>
+</html>

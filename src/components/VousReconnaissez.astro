@@ -1,0 +1,95 @@
+---
+// Section interactive : le visiteur choisit un domaine puis sa situation.
+// Sans JavaScript, tout reste lisible (onglets masqués, panneaux affichés).
+import { DOMAINES } from '@/data/situations';
+import { url } from '@/lib/url';
+import IllustrationSituation from './IllustrationSituation.astro';
+import { lienWhatsApp } from '@/config/site';
+import TitreSection from './TitreSection.astro';
+---
+<section id="vous-reconnaissez-vous" class="bg-white py-20">
+  <div class="mx-auto max-w-6xl px-6">
+    <TitreSection
+      surTitre="Vous reconnaissez-vous ?"
+      titre="Votre activité mérite mieux que du bricolage"
+      intro="Choisissez un domaine, puis la situation qui vous ressemble : nous vous montrons le risque, et comment SIRA le règle."
+    />
+
+    <div class="mb-8 hidden flex-wrap gap-3" role="tablist" aria-label="Domaines" data-onglets>
+      {DOMAINES.map((d, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`onglet-${d.id}`}
+          aria-controls={`panneau-${d.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          class="min-h-12 rounded-full border-2 border-orange-50 px-5 py-2 font-bold text-nuit transition-colors hover:border-orange aria-selected:border-orange aria-selected:bg-orange"
+          data-onglet={d.id}
+        >
+          {d.nom}
+        </button>
+      ))}
+    </div>
+
+    {DOMAINES.map((d) => (
+      <div id={`panneau-${d.id}`} role="tabpanel" aria-labelledby={`onglet-${d.id}`} class="mb-10" data-panneau={d.id}>
+        <h3 class="mb-4 text-xl font-bold" data-titre-domaine>{d.nom}</h3>
+        <div class="grid gap-4 md:grid-cols-2">
+          {d.situations.map((s, j) => (
+            <details class="group rounded-carte border-2 border-bordure bg-white open:border-nuit open:bg-orange-50" open={j === 0}>
+              <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 p-4 font-bold [&::-webkit-details-marker]:hidden">
+                <span class="flex items-center gap-4">
+                  <IllustrationSituation id={s.id} alt="" class="h-16 w-28 flex-none rounded-xl" />
+                  <span>{s.question}</span>
+                </span>
+                <span class="text-2xl text-orange-700 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <div class="space-y-4 px-5 pb-5">
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-widest text-[#B42318]">Le risque</p>
+                  <p class="mt-1">{s.risque}</p>
+                </div>
+                <a href={url(`/expertises/${s.expertise}`)} class="inline-flex min-h-12 items-center font-bold text-orange-700 hover:underline">
+                  Découvrir notre expertise →
+                </a>
+              </div>
+            </details>
+          ))}
+        </div>
+        <div class="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-carte bg-nuit p-6 text-white md:p-8">
+          <div class="max-w-2xl">
+            <p class="text-sm font-bold uppercase tracking-widest text-orange">Vous vous êtes reconnu ?</p>
+            <p class="mt-2 font-titre text-xl font-semibold md:text-2xl">{d.recommandation}</p>
+          </div>
+          <a
+            href={lienWhatsApp(`Bonjour SIRA Business Center, je rencontre un problème de type « ${d.nom} ». Pouvez-vous m’aider ?`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex min-h-12 items-center rounded-xl bg-orange px-6 font-bold text-nuit hover:bg-orange-600"
+          >
+            En parler à un conseiller
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  // Amélioration progressive : transforme la liste en onglets si JavaScript est actif.
+  const onglets = document.querySelector<HTMLElement>('[data-onglets]');
+  if (onglets) {
+    const boutons = onglets.querySelectorAll<HTMLButtonElement>('[data-onglet]');
+    const panneaux = document.querySelectorAll<HTMLElement>('[data-panneau]');
+    onglets.classList.remove('hidden');
+    onglets.classList.add('flex');
+    document.querySelectorAll('[data-titre-domaine]').forEach((t) => t.classList.add('sr-only'));
+
+    const activer = (id: string) => {
+      boutons.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.onglet === id)));
+      panneaux.forEach((p) => (p.hidden = p.dataset.panneau !== id));
+    };
+    boutons.forEach((b) => b.addEventListener('click', () => activer(b.dataset.onglet ?? '')));
+    activer(boutons[0]?.dataset.onglet ?? '');
+  }
+</script>

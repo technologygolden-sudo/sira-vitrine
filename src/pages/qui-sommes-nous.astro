@@ -1,0 +1,52 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BandeauAction from '@/components/BandeauAction.astro';
+import { PILIERS, METHODE } from '@/data/entreprise';
+import { imageProjet } from '@/lib/photos';
+const piliers = PILIERS.map((p) => ({ ...p, image: imageProjet(p.photo) }));
+---
+<BaseLayout titre="Qui sommes-nous" description="Sira Business Center accompagne les entreprises, commerces et institutions dans leur transformation digitale.">
+  <section class="bg-nuit py-16 text-white">
+    <div class="mx-auto max-w-6xl px-6">
+      <p class="text-sm font-bold uppercase tracking-widest text-orange">Qui sommes-nous ?</p>
+      <h1 class="mt-3 text-4xl font-bold text-white md:text-5xl">Votre partenaire de la transformation digitale</h1>
+      <p class="mt-4 max-w-3xl text-lg text-nuit-50">Sira Business Center accompagne les entreprises, commerces et institutions dans leur transformation digitale grâce à des solutions technologiques innovantes, fiables et adaptées aux exigences du monde professionnel moderne.</p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="mx-auto grid max-w-6xl gap-6 px-6 sm:grid-cols-2 lg:grid-cols-4">
+      {piliers.map((p, i) => (
+        <article class="flex flex-col overflow-hidden rounded-carte border border-bordure bg-white">
+          {p.image
+            ? <Image src={p.image} alt={p.alt} width={600} height={400} class="h-48 w-full object-cover" />
+            : <div class:list={['flex h-48 items-center justify-center font-titre text-5xl font-bold', i % 2 ? 'bg-nuit text-orange' : 'bg-orange-50 text-orange-700']} aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>}
+          <div class="p-6">
+            <h2 class="text-xl font-bold text-orange-700">{p.titre}</h2>
+            <p class="mt-2 text-texte-doux">{p.texte}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-white py-16">
+    <div class="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2">
+      <div>
+        <h2 class="text-3xl font-bold">Une équipe à vos côtés, de l’idée à la mise en œuvre</h2>
+        <p class="mt-4 text-texte-doux">Nous ne nous contentons pas de fournir des équipements. Nous prenons le temps de comprendre vos besoins, vos contraintes et vos objectifs, puis nous vous accompagnons à chaque étape : choix, installation, configuration, mise en service et suivi.</p>
+      </div>
+      <ol class="space-y-3">
+        {METHODE.map((e, i) => (
+          <li class="flex gap-4 rounded-2xl bg-fond p-4">
+            <span class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-orange font-bold text-nuit">{i + 1}</span>
+            <div><p class="font-semibold text-nuit">{e.titre}</p><p class="text-sm text-texte-doux">{e.texte}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <BandeauAction />
+</BaseLayout>

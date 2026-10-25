@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BandeauAction from '@/components/BandeauAction.astro';
+import { SECTEURS } from '@/data/secteurs';
+import { url } from '@/lib/url';
+---
+<BaseLayout titre="Votre secteur" description="Solutions SIRA pour entreprises, commerces, banques, restaurants et hôtels, écoles, administrations et cliniques.">
+  <section class="bg-nuit py-16 text-white">
+    <div class="mx-auto max-w-6xl px-6">
+      <p class="text-sm font-bold uppercase tracking-widest text-orange">Votre secteur</p>
+      <h1 class="mt-3 text-4xl font-bold text-white md:text-5xl">Des solutions pour chaque environnement</h1>
+      <p class="mt-4 max-w-2xl text-lg text-nuit-50">Chaque activité a ses contraintes. Choisissez la vôtre pour voir les besoins que nous traitons le plus souvent.</p>
+    </div>
+  </section>
+  <section class="py-16">
+    <ul class="mx-auto grid max-w-6xl gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
+      {SECTEURS.map((s) => (
+        <li>
+          <a href={url(`/secteurs/${s.slug}`)} class="flex h-full flex-col rounded-carte border border-bordure bg-white p-6 transition hover:-translate-y-1 hover:shadow-xl">
+            <span class="font-titre text-xl font-bold text-nuit">{s.nom}</span>
+            <span class="mt-2 text-texte-doux">{s.intro}</span>
+            <span class="mt-4 rounded-xl bg-orange-50 p-3 text-sm"><strong class="text-orange-700">{s.pack}</strong> — {s.packTexte}</span>
+            <span class="mt-auto pt-4 font-bold text-orange-700">Voir les solutions →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+  <BandeauAction />
+</BaseLayout>

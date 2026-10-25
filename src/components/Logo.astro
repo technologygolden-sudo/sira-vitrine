@@ -1,0 +1,28 @@
+---
+// Logo officiel SIRA Business Center (fichier fourni, optimisé par Astro).
+// Le fichier a un fond blanc : sur fond sombre (clair=true), il est posé dans une pastille blanche.
+import { Image } from 'astro:assets';
+import { imageProjet } from '@/lib/photos';
+
+interface Props {
+  clair?: boolean; // true = usage sur fond sombre (pied de page)
+  hauteur?: number; // hauteur affichée en pixels
+}
+const { clair = false, hauteur = 52 } = Astro.props;
+const logo = imageProjet('WhatsApp Image 2026-10-17 at 20.57.57 (1).jpeg');
+const largeur = logo ? Math.round((logo.width / logo.height) * hauteur) : 0;
+---
+{logo ? (
+  <span class:list={['inline-block', clair && 'rounded-xl bg-white px-3 py-2']}>
+    <Image
+      src={logo}
+      alt="Sira Business Center"
+      width={largeur * 2}
+      height={hauteur * 2}
+      class="block h-13 w-auto"
+      loading="eager"
+    />
+  </span>
+) : (
+  <span class:list={['font-titre text-3xl font-bold', clair ? 'text-white' : 'text-nuit']}>Sira</span>
+)}

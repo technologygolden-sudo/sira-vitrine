@@ -1,0 +1,10 @@
+Les photos du site se trouvent désormais dans le dossier img/ (à la racine du projet).
+Astro les optimise automatiquement (WebP, poids réduit) au moment de la génération.
+
+Pour ajouter ou changer une photo :
+1. Copiez l'image dans img/
+2. Indiquez son nom exact dans src/data/entreprise.ts (cartes Qui sommes-nous)
+   ou src/data/expertises.ts (champ photo d'une expertise).
+
+Photo manquante pour l'instant : img/engagement.jpg (carte « Notre engagement »).
+N'utilisez que des photos dont vous avez les droits.
